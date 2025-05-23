@@ -1,6 +1,9 @@
 import cv2 as cv
 from ultralytics import YOLO
 import numpy as np
+import speech
+
+speech.start_listening()
 
 model = YOLO("yolov8n.pt")
 
@@ -29,7 +32,7 @@ while True:
         break
     frame=cv.resize(frame, (1920,1070))
     text_box=np.zeros((100, 1920, 3), dtype='uint8')
-    cv.putText(text_box, "Listening...", (30, 40), cv.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), thickness=2)
+    cv.putText(text_box, speech.transcribed_text, (30, 40), cv.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), thickness=2)
     results = model(frame)
     annotated_frame = results[0].plot()
 
