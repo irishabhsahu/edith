@@ -2,6 +2,8 @@ import cv2 as cv
 from ultralytics import YOLO
 import numpy as np
 import speech
+from command import parse_command
+command_text = ""
 
 speech.start_listening()
 
@@ -30,11 +32,18 @@ while True:
     if not ret:
         print("Failed to read frame")
         break
-    frame=cv.resize(frame, (1920,1070))
+    frame=cv.resize(frame, (1920,1060))
     text_box=np.zeros((100, 1920, 3), dtype='uint8')
-    cv.putText(text_box, speech.transcribed_text, (30, 40), cv.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), thickness=2)
+    cv.putText(text_box, speech.display_text, (30, 60), cv.FONT_HERSHEY_SIMPLEX, 1.0, speech.display_color, thickness=2)
+
     results = model(frame)
     annotated_frame = results[0].plot()
+
+    command = parse_command(speech.transcribed_text)
+    if command:
+        command_text=f'Command: {command}'
+        if command=="exit":
+            break
 
     full_frame = np.vstack((annotated_frame, text_box))
     display_frame = cv.resize(full_frame, (1280, 720))
